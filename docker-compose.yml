@@ -1,0 +1,25 @@
+version: "3.5"
+
+services:
+  testnodejsappapi:
+    build:
+      context: .
+    image: testnodejsappapi:latest
+    container_name: testnodejsappapi
+    networks:
+        - "reverse-proxy"
+    labels:
+      - traefik.http.middlewares.testnodejsappapiprefix.stripprefix.prefixes=/testnodejsapp
+      - traefik.http.middlewares.testnodejsappapiprefix.stripprefix.forceslash=false
+      - traefik.enable=true
+      - traefik.http.routers.testnodejsappapi.entrypoints=web
+      # - traefik.http.routers.testnodejsappapi.tls=true
+      - traefik.http.routers.testnodejsappapi.rule=Host(`myexample.com`) && PathPrefix(`/testnodejsapp`)
+      # - traefik.http.routers.testnodejsappapi.middlewares=redirecttohttps,testnodejsappapiprefix
+      - traefik.http.routers.testnodejsappapi.middlewares=testnodejsappapiprefix
+    restart: always
+
+networks:
+  reverse-proxy:
+    external:
+      name: reverseproxy_services
